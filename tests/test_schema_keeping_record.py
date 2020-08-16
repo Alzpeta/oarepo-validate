@@ -69,4 +69,24 @@ def test_delete(app, db):
         del rec['$schema']
 
 
+def test_patch(app, db):
+    pid, rec = create_record({}, clz=SchemaEnforcingRecord)
+    with pytest.raises(AttributeError):
+        rec.patch([
+            {
+                'op': 'replace',
+                'path': '/$schema',
+                'value': 'invalid'
+            }
+        ])
+
+    rec.patch([
+        {
+            'op': 'replace',
+            'path': '/$schema',
+            'value': 'records/record-v1.0.0.json'
+        }
+    ])
+
+
 RECORD_SCHEMA = 'records/record-v1.0.0.json'

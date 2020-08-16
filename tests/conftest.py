@@ -71,21 +71,6 @@ def app(request):
 
     app.secret_key = 'changeme'
 
-    # Parameterize application.
-    if hasattr(request, 'param'):
-        if 'endpoint' in request.param:
-            app.config['RECORDS_REST_ENDPOINTS']['recid'].update(
-                request.param['endpoint'])
-        if 'records_rest_endpoints' in request.param:
-            original_endpoint = app.config['RECORDS_REST_ENDPOINTS']['recid']
-            del app.config['RECORDS_REST_ENDPOINTS']['recid']
-            for new_endpoint_prefix, new_endpoint_value in \
-                request.param['records_rest_endpoints'].items():
-                new_endpoint = dict(original_endpoint)
-                new_endpoint.update(new_endpoint_value)
-                app.config['RECORDS_REST_ENDPOINTS'][new_endpoint_prefix] = \
-                    new_endpoint
-
     InvenioDB(app)
     InvenioRecords(app)
     schemas = InvenioJSONSchemas(app)

@@ -58,7 +58,7 @@ class AllowedSchemaMixin(object):
         schema = data.get('$schema')
         if schema:
             absolute_schema = convert_relative_schema_to_absolute(schema)
-            if schema != absolute_schema:
+            if absolute_schema is not None and schema != absolute_schema:
                 schema = absolute_schema
                 data['$schema'] = absolute_schema
         return schema
