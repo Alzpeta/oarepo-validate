@@ -1,6 +1,6 @@
 import pytest
 from invenio_records_rest.loaders.marshmallow import MarshmallowErrors
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, pre_load
 
 from oarepo_validate.marshmallow import MarshmallowValidatedRecord
 
@@ -9,8 +9,28 @@ class TestSchema(Schema):
     name = fields.Str(required=True)
 
 
+class TestPIDSchema(Schema):
+    id = fields.Int()
+
+    @pre_load
+    def on_load(self, in_data, **kwargs):
+        assert 'pid' in self.context
+        assert self.context['pid'] == 123
+        return in_data
+
+
 class TestRecord(MarshmallowValidatedRecord):
     MARSHMALLOW_SCHEMA = TestSchema
+
+
+def fetcher(uuid, data, *args, **kwargs):
+    print(uuid, data, *args, **kwargs)
+    return data['id']
+
+
+class TestPIDRecord(MarshmallowValidatedRecord):
+    MARSHMALLOW_SCHEMA = TestPIDSchema
+    PID_FETCHER = fetcher
 
 
 class TestRecordNoValidation(TestRecord):
@@ -67,3 +87,7 @@ def test_prevent_validation(db, app):
 
     # can temporarily switch off the validation
     rec.commit(validate_marshmallow=False)
+
+
+def test_pid(db, app):
+    rec = TestPIDRecord.create({'id': 123})

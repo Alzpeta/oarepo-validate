@@ -43,7 +43,7 @@ class MarshmallowValidatedRecordMixin:
 
         context = {}
         if self.PID_FETCHER is not None:
-            pid = self.PID_FETCHER(None, data)
+            pid = self.__class__.PID_FETCHER(None, data)
             context['pid'] = pid
         context['record'] = self
         try:
