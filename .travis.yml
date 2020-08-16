@@ -43,7 +43,7 @@ after_success:
 # check if release tag is the same as version.py tag
 before_deploy:
 - |-
-  SRCTAG=$(find . -name "version.py" | grep -v 'build' | xargs cat | grep '__version__' | sed 's/__version__//' | sed 's/=//g' | sed 's/"//g' | sed "s/'//g" | sed 's/[ \t\n]//g')
+  SRCTAG=$(cat oarepo_validate/version.py | grep '__version__' | sed 's/__version__//' | sed 's/=//g' | sed 's/"//g' | sed "s/'//g" | sed 's/[ \t\n]//g')
   test $SRCTAG == $TRAVIS_TAG
 
 deploy:
