@@ -24,6 +24,7 @@ install_requires = [
 
 tests_require = [
     'pytest',
+    'pytest-cov',
     'invenio_db',
     'invenio_pidstore',
     'invenio_search',
@@ -59,14 +60,6 @@ setup(
     zip_safe=False,
     include_package_data=True,
     platforms='any',
-    entry_points={
-        # 'invenio_base.apps': [
-        #     'oarepo_validate = oarepo_validate.ext:OARepoValidate',
-        # ],
-        # 'invenio_base.api_apps': [
-        #     'oarepo_validate = oarepo_validate.ext:OARepoValidate',
-        # ]
-    },
     install_requires=install_requires,
     setup_requires=setup_requires,
     tests_require=tests_require,

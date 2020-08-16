@@ -50,7 +50,7 @@ class MyRecord(SchemaKeepingRecordMixin, Record):
 And register the record in REST endpoints in configuration:
 
 ```python
-RECORDS_PID = 'pid(recid,record_class="my:MyRecord")'
+RECORD_PID = 'pid(recid,record_class="my:MyRecord")'
 
 RECORDS_REST_ENDPOINTS = {
     'records': dict(
@@ -58,6 +58,7 @@ RECORDS_REST_ENDPOINTS = {
         pid_minter='recid',
         pid_fetcher='recid',
         record_class='my:MyRecord',
+        item_route='/records/<{0}:pid_value>'.format(RECORD_PID),
         # ...
     )
 }
@@ -142,10 +143,10 @@ Now marshmallow schema will be processed before each ``commit`` method.
 #### What about marshmallow in loader?
 
 In most cases, marshmallow schema in loader can be removed and a simple json loader used instead.
-However, if you need a custom processing of input data that are independent of validation,
+However, if you need a custom processing of input data that is independent of validation,
 you can keep the two marshmallows.
 
-A special case is when the marshmallow in loader already includes the marshmallow rules in validation.
+A special case is when the marshmallow in loader already includes validation marshmallow rules.
 Then you would want to use loader's marshmallow for create / replace and marshmallow in validation
 only for patch operation (so that the same marshmallow rules are not called twice). To accomplish
 this, set:
