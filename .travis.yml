@@ -32,8 +32,7 @@ before_install:
   - cat .travis-release-requirements.txt
 
 install:
-  - travis_retry pip install -r .travis-${REQUIREMENTS}-requirements.txt
-  - travis_retry pip install -e .[$EXTRAS]
+  - travis_retry pip install -r .travis-release-requirements.txt
 
 script:
   - "./run-tests.sh"
