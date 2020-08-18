@@ -3,6 +3,8 @@ from invenio_records_rest.loaders.marshmallow import MarshmallowErrors
 from jsonpatch import apply_patch
 from marshmallow import ValidationError
 
+from .signals import before_marshmallow_validate, after_marshmallow_validate
+
 
 class MarshmallowValidatedRecordMixin:
     """
@@ -33,21 +35,28 @@ class MarshmallowValidatedRecordMixin:
     marshmallow validation. See the readme for details
     """
 
-    def validate_marshmallow(self, data=None):
+    def validate_marshmallow(self, data=None, validate_kwargs=None):
         """
         Validates marshmallow and returns validated data.
         Does not modify the record nor save it to the database.
         """
         if data is None:
             data = self
-
+        validate_kwargs = validate_kwargs or {}
         context = {}
         if self.PID_FETCHER is not None:
             pid = self.__class__.PID_FETCHER(None, data)
             context['pid'] = pid
         context['record'] = self
+        before_marshmallow_validate.send(
+            self,
+            record=self, context=context, **validate_kwargs)
         try:
-            return self.MARSHMALLOW_SCHEMA(context=context).load(data)
+            result = self.MARSHMALLOW_SCHEMA(context=context).load(data)
+            after_marshmallow_validate.send(
+                self,
+                record=self, context=context, result=result, **validate_kwargs)
+            return result
         except ValidationError as error:
             raise MarshmallowErrors(error.messages)
 
@@ -73,7 +82,7 @@ class MarshmallowValidatedRecordMixin:
         """
 
         if kwargs.pop('validate_marshmallow', self.VALIDATE_MARSHMALLOW):
-            data = self.validate_marshmallow()
+            data = self.validate_marshmallow(validate_kwargs=kwargs)
             self.update(data)
         return super().validate(**kwargs)
 

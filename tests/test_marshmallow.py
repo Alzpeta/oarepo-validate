@@ -1,7 +1,8 @@
 import pytest
 from invenio_records_rest.loaders.marshmallow import MarshmallowErrors
-from marshmallow import Schema, fields, pre_load
+from marshmallow import Schema, fields, pre_load, post_load
 
+from oarepo_validate import before_marshmallow_validate, after_marshmallow_validate
 from oarepo_validate.marshmallow import MarshmallowValidatedRecord
 
 
@@ -17,6 +18,16 @@ class TestPIDSchema(Schema):
         assert 'pid' in self.context
         assert self.context['pid'] == 123
         return in_data
+
+
+class TestContextSchema(Schema):
+    name = fields.Str(required=True)
+
+    @post_load
+    def loaded(self, data, **kwargs):
+        assert self.context['initialized']
+        self.context['passed'] = 1
+        return data
 
 
 class TestRecord(MarshmallowValidatedRecord):
@@ -36,6 +47,10 @@ class TestPIDRecord(MarshmallowValidatedRecord):
 class TestRecordNoValidation(TestRecord):
     VALIDATE_MARSHMALLOW = False
     VALIDATE_PATCH = True
+
+
+class TestContextRecord(MarshmallowValidatedRecord):
+    MARSHMALLOW_SCHEMA = TestContextSchema
 
 
 def test_validate(db, app):
@@ -91,3 +106,24 @@ def test_prevent_validation(db, app):
 
 def test_pid(db, app):
     rec = TestPIDRecord.create({'id': 123})
+
+
+def test_signals(db, app):
+    def before(sender, record, context, **kwargs):
+        context['initialized'] = True
+
+    def after(sender, record, context, result, **kwargs):
+        assert context['passed']
+        result['test'] = True
+        record.test = True
+
+    try:
+        before_marshmallow_validate.connect(before)
+        after_marshmallow_validate.connect(after)
+
+        rec = TestContextRecord.create({'name': 'abc'})
+        assert rec['test'] is True
+        assert rec.test is True
+    finally:
+        before_marshmallow_validate.disconnect(before)
+        after_marshmallow_validate.disconnect(after)
