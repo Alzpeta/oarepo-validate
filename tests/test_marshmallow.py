@@ -1,6 +1,6 @@
 import pytest
 from invenio_records_rest.loaders.marshmallow import MarshmallowErrors
-from marshmallow import Schema, fields, pre_load, post_load
+from marshmallow import Schema, fields, pre_load, post_load, RAISE, INCLUDE
 
 from oarepo_validate import before_marshmallow_validate, after_marshmallow_validate
 from oarepo_validate.marshmallow import MarshmallowValidatedRecord
@@ -26,8 +26,12 @@ class TestContextSchema(Schema):
     @post_load
     def loaded(self, data, **kwargs):
         assert self.context['initialized']
+        assert self.context['extra_context_param'] is True
         self.context['passed'] = 1
         return data
+
+    class Meta:
+        unknown = INCLUDE
 
 
 class TestRecord(MarshmallowValidatedRecord):
@@ -121,9 +125,13 @@ def test_signals(db, app):
         before_marshmallow_validate.connect(before)
         after_marshmallow_validate.connect(after)
 
-        rec = TestContextRecord.create({'name': 'abc'})
+        rec = TestContextRecord.create({'name': 'abc'}, extra_context_param=True)
         assert rec['test'] is True
         assert rec.test is True
+
+        del rec['test']
+
+        rec.commit(extra_context_param=True)
     finally:
         before_marshmallow_validate.disconnect(before)
         after_marshmallow_validate.disconnect(after)

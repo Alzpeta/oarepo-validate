@@ -43,7 +43,7 @@ class MarshmallowValidatedRecordMixin:
         if data is None:
             data = self
         validate_kwargs = validate_kwargs or {}
-        context = {}
+        context = {**validate_kwargs}
         if self.PID_FETCHER is not None:
             pid = self.__class__.PID_FETCHER(None, data)
             context['pid'] = pid
