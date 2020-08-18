@@ -177,7 +177,8 @@ The library provides the following signals:
 ```python
 before_marshmallow_validate = signal('oarepo_before_marshmallow_validate')
 """
-Signal invoked before marshmallow is validated (loaded) inside Record.validate
+Signal invoked before record metadata are validated (loaded by marshmallow schema)
+inside Record.validate
 
 :param source:  the record being validated
 :param record:  the record being validated
@@ -187,7 +188,8 @@ Signal invoked before marshmallow is validated (loaded) inside Record.validate
 
 after_marshmallow_validate = signal('oarepo_after_marshmallow_validate')
 """
-Signal invoked before marshmallow is validated (loaded) inside Record.validate
+Signal invoked after record metadata are validated (loaded by marshmallow schema)
+inside Record.validate
 
 :param source:  the record being validated
 :param record:  the record that was successfully validated
