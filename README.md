@@ -144,7 +144,19 @@ Now marshmallow schema will be processed before each ``commit`` method.
 
 In most cases, marshmallow schema in loader can be removed and a simple json loader used instead.
 However, if you need a custom processing of input data that is independent of validation,
-you can keep the two marshmallows.
+you can keep the two marshmallows. To achieve this, use ``oarepo_validate.json_loader``
+as the record loader.
+
+```python
+RECORDS_REST_ENDPOINTS = {
+    'recid': dict(
+        record_loaders={
+            'application/json': 'oarepo_validate.json_loader',
+        },
+        # ...
+    )
+}
+```
 
 A special case is when the marshmallow in loader already includes validation marshmallow rules.
 Then you would want to use loader's marshmallow for create / replace and marshmallow in validation
