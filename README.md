@@ -151,7 +151,7 @@ as the record loader.
 RECORDS_REST_ENDPOINTS = {
     'recid': dict(
         record_loaders={
-            'application/json': 'oarepo_validate.json_loader',
+            'application/json': 'oarepo_validate:json_loader',
         },
         # ...
     )
