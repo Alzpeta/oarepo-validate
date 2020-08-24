@@ -211,3 +211,22 @@ inside Record.validate
 :param **kwargs: kwargs passed to Record.create or Record.commit (or Record.validate)
 """
 ```
+
+#### Serializers
+
+If ``marhsmallow.dump`` is not required for metadata serialization,
+``oarepo_validate.json_search, oarepo_validate.json_response``
+are faster replacements for marshmallow-based serializers:
+
+```python
+RECORDS_REST_ENDPOINTS = {
+    'recid': dict(
+        record_serializers={
+            'application/json': 'oarepo_validate:json_response',
+        },
+        search_serializers={
+            'application/json': 'oarepo_validate:json_search',
+        }
+    )
+}
+```
