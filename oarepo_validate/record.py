@@ -78,6 +78,14 @@ class SchemaKeepingRecordMixin(AllowedSchemaMixin):
     PREFERRED_SCHEMA = None
     _RESOLVED = False
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if '$schema' not in self:
+            self._prepare_schemas()
+            self['$schema'] = self.PREFERRED_SCHEMA
+        else:
+            self._check_schema(self)
+
     def clear(self):
         """Preserves the schema even if the record is cleared and all metadata wiped out."""
         schema = self.get('$schema')

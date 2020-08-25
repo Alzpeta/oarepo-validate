@@ -8,6 +8,11 @@ under the terms of the MIT License; see LICENSE file for more details.
 # Changes
 
 
+## Version 1.2.1 (released 2020-08-25)
+
+- Keeping schema in ``Record.__init__`` (useful mostly for tests)
+
+
 ## Version 1.2.0 (released 2020-08-25)
 
 - Added marshmallow-less loaders and serializers
