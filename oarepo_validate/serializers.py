@@ -6,7 +6,10 @@ from invenio_records_rest.serializers.json import JSONSerializerMixin
 class JSONSerializer(JSONSerializerMixin, TransformerMixinInterface, PreprocessorMixin):
     def transform_record(self, pid, record, links_factory=None, **kwargs):
         """Transform record into an intermediate representation."""
-        return self.preprocess_record(pid, record, links_factory=links_factory, **kwargs)
+        ret = self.preprocess_record(pid, record, links_factory=links_factory, **kwargs)
+        if 'pid' in ret:
+            ret['id'] = ret.pop('pid').pid_value
+        return ret
 
     def transform_search_hit(self, pid, record_hit, links_factory=None,
                              **kwargs):
