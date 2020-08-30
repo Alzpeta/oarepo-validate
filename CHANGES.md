@@ -8,6 +8,11 @@ under the terms of the MIT License; see LICENSE file for more details.
 # Changes
 
 
+## Version 1.2.3 (released 2020-08-30)
+
+- Handling pid field in search hit serialization
+
+
 ## Version 1.2.2 (released 2020-08-25)
 
 - Handling pid field in record serialization

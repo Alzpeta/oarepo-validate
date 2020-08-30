@@ -14,8 +14,10 @@ class JSONSerializer(JSONSerializerMixin, TransformerMixinInterface, Preprocesso
     def transform_search_hit(self, pid, record_hit, links_factory=None,
                              **kwargs):
         """Transform search result hit into an intermediate representation."""
-        return self.preprocess_search_hit(pid, record_hit, links_factory=links_factory, **kwargs)
-
+        ret = self.preprocess_search_hit(pid, record_hit, links_factory=links_factory, **kwargs)
+        if 'pid' in ret:
+            ret['id'] = ret.pop('pid').pid_value
+        return ret
 
 json_serializer = JSONSerializer(replace_refs=False)
 
