@@ -120,6 +120,7 @@ class SchemaKeepingRecordMixin(AllowedSchemaMixin):
         """Dict's delitem."""
         if key == '$schema':
             raise AttributeError('Schema can not be deleted')
+        return super().__delitem__(key)
 
     @classmethod
     def create(cls, data, id_=None, **kwargs):
