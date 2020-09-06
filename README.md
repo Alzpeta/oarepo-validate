@@ -207,7 +207,8 @@ inside Record.validate
 :param record:  the record that was successfully validated
 :param context: marshmallow context
 :param result:  result of load that will be used to update record's metadata.
-                Signal handler can modify it.
+                Signal handler can modify it. In case of validation exception the result is None.
+:param error:   Exception raised when validating. None if validation has been successful
 :param **kwargs: kwargs passed to Record.create or Record.commit (or Record.validate)
 """
 ```

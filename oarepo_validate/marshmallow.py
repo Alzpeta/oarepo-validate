@@ -55,9 +55,12 @@ class MarshmallowValidatedRecordMixin:
             result = self.MARSHMALLOW_SCHEMA(context=context).load(data)
             after_marshmallow_validate.send(
                 self,
-                record=self, context=context, result=result, **validate_kwargs)
+                record=self, context=context, result=result, error=None, **validate_kwargs)
             return result
         except ValidationError as error:
+            after_marshmallow_validate.send(
+                self,
+                record=self, context=context, result=None, error=error, **validate_kwargs)
             raise MarshmallowErrors(error.messages)
 
     def patch(self, patch):
