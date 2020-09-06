@@ -87,7 +87,7 @@ class MarshmallowValidatedRecordMixin:
         if kwargs.pop('validate_marshmallow', self.VALIDATE_MARSHMALLOW):
             data = self.validate_marshmallow(validate_kwargs=kwargs)
             self.update(data)
-        return super().validate(**kwargs)
+        return super().validate()   # do not pass kwargs along the stack
 
 
 class MarshmallowValidatedRecord(MarshmallowValidatedRecordMixin, Record):
