@@ -60,7 +60,7 @@ class MarshmallowValidatedRecordMixin:
         except ValidationError as error:
             after_marshmallow_validate.send(
                 self,
-                record=self, context=context, result=error.valid_data, error=error, **validate_kwargs)
+                record=self, context=context, result=None, error=error, **validate_kwargs)
             err = MarshmallowErrors(error.messages)
             err.valid_data = error.valid_data
             raise err

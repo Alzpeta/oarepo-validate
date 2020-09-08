@@ -33,6 +33,15 @@ tests_require = [
     'elasticsearch-dsl>=7.0.0'
 ]
 
+extras_require = {
+    'tests': tests_require,
+    'dev': [
+        *tests_require,
+        'invenio-app',
+        'redis'
+    ]
+}
+
 setup_requires = [
     'pytest-runner>=2.7',
 ]
@@ -63,6 +72,12 @@ setup(
     install_requires=install_requires,
     setup_requires=setup_requires,
     tests_require=tests_require,
+    extras_require=extras_require,
+    entry_points={
+        'flask.commands': [
+            'oarepo:validate = oarepo_validate.cli:validate',
+        ]
+    },
     classifiers=[
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
