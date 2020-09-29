@@ -23,6 +23,9 @@
 # SOFTWARE.
 #
 """ACL related mixins for Record class."""
+import json
+from functools import wraps
+
 from invenio_jsonschemas import current_jsonschemas
 from invenio_records import Record
 from jsonpatch import apply_patch
@@ -147,6 +150,46 @@ class SchemaKeepingRecordMixin(AllowedSchemaMixin):
         data = apply_patch(dict(self), patch)
         self._check_schema(data)
         return self.__class__(data, model=self.model)
+
+
+def files_keeping_wrapper(f):
+    @wraps(f)
+    def wrap(self, *args, **kwargs):
+        bucket_id = self.get('_bucket')
+        files = self.get('_files')
+        ret = f(self, *args, **kwargs)
+        if bucket_id:
+            self['_bucket'] = bucket_id
+        if files is not None:
+            self['_files'] = files
+        return ret
+
+
+def json_equals(a, b):
+    a = json.dumps(a, sort_keys=True)
+    b = json.dumps(b, sort_keys=True)
+    return a == b
+
+
+class FilesKeepingRecordMixin:
+
+    @files_keeping_wrapper
+    def clear(self):
+        super().clear()
+
+    @files_keeping_wrapper
+    def update(self, e=None, **f):
+        """Dictionary update."""
+        return super().update(e, **f)
+
+    def patch(self, patch):
+        bucket_id = self.get('_bucket')
+        files = self.get('_files')
+
+        data = apply_patch(dict(self), patch)
+        ret = self.__class__(data, model=self.model)
+        assert ret.get('_bucket') == bucket_id
+        assert json_equals(ret.get('_files'), files)
 
 
 class SchemaEnforcingRecord(SchemaKeepingRecordMixin, Record):
