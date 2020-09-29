@@ -144,8 +144,8 @@ Now marshmallow schema will be processed before each ``commit`` method.
 
 In most cases, marshmallow schema in loader can be removed and a simple json loader used instead.
 However, if you need a custom processing of input data that is independent of validation,
-you can keep the two marshmallows. To achieve this, use ``oarepo_validate.json_loader``
-as the record loader.
+you can keep the two marshmallows. To remove marshmallow loader and use a simple one,
+set ``oarepo_validate.json_loader`` as the record loader.
 
 ```python
 RECORDS_REST_ENDPOINTS = {
@@ -173,6 +173,35 @@ class MyRecord(MarshmallowValidatedRecordMixin, Record):
 
 ``VALIDATE_MARSHMALLOW`` will switch off marshmallow validation in ``validate`` method and
 ``VALIDATE_PATCH`` will switch on marshmallow validation in ``patch`` method.
+
+##### record-files
+
+Be careful with removing the loader when you use ``invenio-record-files``. Just using plain
+json loader makes it possible to set ``_bucket`` and ``_files`` directly which should be
+disabled for security reasons (anyone might gain access to any file if he knows bucket and
+object version of the file and has write access to any record).
+
+To fix this, set:
+
+```python
+from oarepo_validate import FilesKeepingRecordMixin
+
+RECORDS_REST_ENDPOINTS = {
+    'recid': dict(
+        record_loaders={
+            'application/json': 'oarepo_validate:json_loader',
+        },
+        # ...
+    )
+}
+
+class MyRecord(FilesKeepingRecordMixin, ...):
+    ...
+```
+
+The loader will strip ``_bucket`` and ``_files`` from the payload and the mixin
+will make sure that the files can not be removed with ``put`` or replaced with ``patch``
+operation.
 
 #### Context
 
