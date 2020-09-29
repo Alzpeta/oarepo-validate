@@ -28,6 +28,11 @@ from oarepo_validate.record import SchemaEnforcingRecord
 from .helpers import create_record
 
 
+def test_constructor(app, db):
+    rec = SchemaEnforcingRecord({})
+    assert rec['$schema'] == SchemaEnforcingRecord.PREFERRED_SCHEMA
+
+
 def test_schema_create(app, db):
     pid, rec = create_record({}, clz=SchemaEnforcingRecord)
     assert rec['$schema'] == SchemaEnforcingRecord.PREFERRED_SCHEMA
@@ -64,9 +69,15 @@ def test_set(app, db):
 
 
 def test_delete(app, db):
-    pid, rec = create_record({}, clz=SchemaEnforcingRecord)
+    pid, rec = create_record({'test': 'blah'}, clz=SchemaEnforcingRecord)
     with pytest.raises(AttributeError):
         del rec['$schema']
+
+    del rec['test']
+    assert dict(rec) == {
+        'control_number': '1',
+        '$schema': SchemaEnforcingRecord.PREFERRED_SCHEMA
+    }
 
 
 def test_patch(app, db):

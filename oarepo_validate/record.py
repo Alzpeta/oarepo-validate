@@ -164,6 +164,8 @@ def files_keeping_wrapper(f):
             self['_files'] = files
         return ret
 
+    return wrap
+
 
 def json_equals(a, b):
     a = json.dumps(a, sort_keys=True)
@@ -178,9 +180,9 @@ class FilesKeepingRecordMixin:
         super().clear()
 
     @files_keeping_wrapper
-    def update(self, e=None, **f):
+    def update(self, *args, **kwargs):
         """Dictionary update."""
-        return super().update(e, **f)
+        return super().update(*args, **kwargs)
 
     def patch(self, patch):
         bucket_id = self.get('_bucket')
@@ -188,8 +190,11 @@ class FilesKeepingRecordMixin:
 
         data = apply_patch(dict(self), patch)
         ret = self.__class__(data, model=self.model)
-        assert ret.get('_bucket') == bucket_id
-        assert json_equals(ret.get('_files'), files)
+        if ret.get('_bucket') != bucket_id:
+            raise AttributeError('_bucket can not be overwritten')
+        if not json_equals(ret.get('_files'), files):
+            raise AttributeError('_files can not be overwritten')
+        return ret
 
 
 class SchemaEnforcingRecord(SchemaKeepingRecordMixin, Record):
