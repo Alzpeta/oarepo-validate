@@ -5,6 +5,11 @@ from marshmallow import ValidationError
 
 from .signals import before_marshmallow_validate, after_marshmallow_validate
 
+KNOWN_RECORD_VALIDATION_PROPS = {
+    'format_checker',
+    'validator'
+}
+
 
 class MarshmallowValidatedRecordMixin:
     """
@@ -89,7 +94,10 @@ class MarshmallowValidatedRecordMixin:
         if kwargs.pop('validate_marshmallow', self.VALIDATE_MARSHMALLOW):
             data = self.validate_marshmallow(validate_kwargs=kwargs)
             self.update(data)
-        return super().validate()   # do not pass kwargs along the stack
+        kwargs = {
+            k: v for k, v in kwargs.items() if k in KNOWN_RECORD_VALIDATION_PROPS
+        }
+        return super().validate(**kwargs)
 
 
 class MarshmallowValidatedRecord(MarshmallowValidatedRecordMixin, Record):
