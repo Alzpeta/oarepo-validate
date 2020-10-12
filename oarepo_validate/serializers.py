@@ -17,10 +17,12 @@ class JSONSerializer(JSONSerializerMixin, TransformerMixinInterface, Preprocesso
         ret = self.preprocess_search_hit(pid, record_hit, links_factory=links_factory, **kwargs)
         if 'pid' in ret:
             ret['id'] = ret.pop('pid').pid_value
+        if 'highlight' in record_hit:
+            ret['highlight'] = record_hit['highlight']
         return ret
+
 
 json_serializer = JSONSerializer(replace_refs=False)
 
 json_response = record_responsify(json_serializer, 'application/json')
 json_search = search_responsify(json_serializer, 'application/json')
-
