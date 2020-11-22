@@ -39,7 +39,7 @@ extras_require = {
         *tests_require,
         'invenio-app',
         'redis',
-        'md-toc'
+        'markdown-toc'
     ]
 }
 

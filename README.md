@@ -1,5 +1,7 @@
 # oarepo-validate
 
+
+
 [![image][]][1]
 [![image][2]][3]
 [![image][4]][5]
@@ -19,8 +21,24 @@
 
 OArepo Validate library for model-level matedata validation
 
-<!--TOC-->
-<!--TOC-->
+
+## Table of Contents
+* [Installation](#Installation)
+* [Usage](#Usage)
+	* [JSON schema validation](#JSON-schema-validation)
+		* [Create record](#Create-record)
+		* [PUT / PATCH record](#PUT-/-PATCH-record)
+	* [Marshmallow validation](#Marshmallow-validation)
+		* [Usage](#Usage)
+		* [What about marshmallow in loader?](#What-about-marshmallow-in-loader?)
+			* [record-files](#record-files)
+		* [Context](#Context)
+		* [Output of marshmallow validation](#Output-of-marshmallow-validation)
+			* [Valid data](#Valid-data)
+			* [Invalid data](#Invalid-data)
+			* [Merging process](#Merging-process)
+		* [Signals](#Signals)
+		* [Serializers](#Serializers)
 
 ## Installation
 
