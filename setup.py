@@ -38,7 +38,8 @@ extras_require = {
     'dev': [
         *tests_require,
         'invenio-app',
-        'redis'
+        'redis',
+        'md-toc'
     ]
 }
 
@@ -76,7 +77,13 @@ setup(
     entry_points={
         'flask.commands': [
             'oarepo:validate = oarepo_validate.cli:validate',
-        ]
+        ],
+        'invenio_base.apps': [
+            'oarepo_validate = oarepo_validate.ext:OARepoValidate',
+        ],
+        'invenio_base.api_apps': [
+            'oarepo_validate = oarepo_validate.ext:OARepoValidate',
+        ],
     },
     classifiers=[
         'Environment :: Web Environment',

@@ -2,13 +2,23 @@ from invenio_records import Record
 from invenio_records_rest.loaders.marshmallow import MarshmallowErrors
 from jsonpatch import apply_patch
 from marshmallow import ValidationError
+from sqlalchemy.util import symbol
 
+from .proxies import current_validate
 from .signals import before_marshmallow_validate, after_marshmallow_validate
 
 KNOWN_RECORD_VALIDATION_PROPS = {
     'format_checker',
     'validator'
 }
+
+
+class Keep:
+    def __init__(self, value):
+        self.value = value
+
+
+DELETED = symbol('deleted')
 
 
 class MarshmallowValidatedRecordMixin:
@@ -32,6 +42,18 @@ class MarshmallowValidatedRecordMixin:
     it will be validated twice.
 
     To fix this and be safe on REST side, set VALIDATE_MARSHMALLOW to False and VALIDATE_PATCH to True
+    """
+
+    MERGE_WITH_VALIDATED = True
+    """
+    If set to True, if validation is successful the validated data will be merged into the record's
+    metadata.
+    """
+
+    MERGE_WITH_VALIDATED_ERROR = True
+    """
+    If set to True, if validation is not successful but partially valid content is reported from
+    marshmallow, it will be merged into the record's metadata.
     """
 
     VALIDATE_PATCH = False
@@ -92,12 +114,22 @@ class MarshmallowValidatedRecordMixin:
         """
 
         if kwargs.pop('validate_marshmallow', self.VALIDATE_MARSHMALLOW):
-            data = self.validate_marshmallow(validate_kwargs=kwargs)
-            self.update(data)
+            try:
+                data = self.validate_marshmallow(validate_kwargs=kwargs)
+                if self.MERGE_WITH_VALIDATED:
+                    self._merge_in(data)
+            except MarshmallowErrors as e:
+                if self.MERGE_WITH_VALIDATED_ERROR:
+                    self._merge_in(e.valid_data)
+                raise
+
         kwargs = {
             k: v for k, v in kwargs.items() if k in KNOWN_RECORD_VALIDATION_PROPS
         }
         return super().validate(**kwargs)
+
+    def _merge_in(self, valid_data):
+        current_validate.merge_function(self, valid_data)
 
 
 class MarshmallowValidatedRecord(MarshmallowValidatedRecordMixin, Record):

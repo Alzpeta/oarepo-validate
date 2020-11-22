@@ -19,6 +19,8 @@
 
 OArepo Validate library for model-level matedata validation
 
+<!--TOC-->
+<!--TOC-->
 
 ## Installation
 
@@ -210,6 +212,46 @@ Marshmallow validation is called with a context, that is filled with:
   * ``record``
   * ``pid`` if it is known
   * Any ``**kwargs`` passed to ``Record.create`` or ``Record.commit``
+
+#### Output of marshmallow validation
+
+##### Valid data
+
+The marshmallow loader produces validated data. Be default, the validated data are merged into
+the record. The rationale for this is that the validation might be used to replace content
+(include referenced content, etc). To have a consistent processing, the schema must be idempotent,
+that is ``schema(schema(input)) == schema(input)``.
+
+To prevent this behaviour, set ``MERGE_WITH_VALIDATED`` to ``False`` on your record class.
+
+##### Invalid data
+
+Even in the case the data are invalid, marshmallow validation might still return a partially
+valid output (in ``ValidationError.valid_data``). This library merges the valid data into
+the record's metadata. This behaviour can be switched off by setting
+``MERGE_WITH_VALIDATED_ERROR = False``
+on your record class.
+
+
+##### Merging process
+
+The merging process is recursive and is designed to preserve values in the record's metadata
+if they are not present in the validated metadata. This means:
+
+  * lists are merged item-wise. If the list in the record is longer than in validated data,
+    extra items are kept.
+  * dictionaries are merged based on the same key. If a key is both in the record and in validated
+    data, the respective values are merged recursively and the result used. Extra keys from
+    validated data are copied into the record's metadata and keys present in record's metadata
+    and ommited from validated data are kept.
+
+Sometimes it might be necessary to prevent this merging. The library provides:
+
+  * ``Keep(value)`` - if an instance of ``Keep`` class is returned, no merging is performed
+    and the value is used as is - that is, it will overwrite anything in the record
+  * ``DELETED`` - if this constant is returned, the item will be deleted - if it is a part of
+    an array, the corresponding array item in record's metadata is deleted. If it is a value
+    of a key in the dictionary, the corresponding key in record's metadata is deleted.
 
 #### Signals
 

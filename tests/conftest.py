@@ -41,6 +41,8 @@ from invenio_pidstore import InvenioPIDStore
 from invenio_records import InvenioRecords
 from sqlalchemy_utils import database_exists, create_database
 
+from oarepo_validate.ext import OARepoValidate
+
 sys.path.insert(0, os.path.dirname(__file__))
 
 
@@ -75,6 +77,7 @@ def app(request):
     InvenioRecords(app)
     schemas = InvenioJSONSchemas(app)
     InvenioPIDStore(app)
+    OARepoValidate(app)
     schemas._state.register_schema(os.path.join(os.path.dirname(__file__), 'jsonschemas'),
                                    'records/record-v1.0.0.json')
 
