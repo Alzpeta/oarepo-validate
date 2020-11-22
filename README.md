@@ -9,7 +9,7 @@
 [![image][8]][9]
 
   [image]: https://img.shields.io/travis/oarepo/oarepo-validate.svg
-  [1]: https://travis-ci.org/oarepo/oarepo-validate
+  [1]: https://travis-ci.com/oarepo/oarepo-validate
   [2]: https://img.shields.io/coveralls/oarepo/oarepo-validate.svg
   [3]: https://coveralls.io/r/oarepo/oarepo-validate
   [4]: https://img.shields.io/github/tag/oarepo/oarepo-validate.svg
