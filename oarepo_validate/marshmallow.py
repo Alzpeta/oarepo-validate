@@ -91,6 +91,11 @@ class MarshmallowValidatedRecordMixin:
             err = MarshmallowErrors(error.messages)
             err.valid_data = error.valid_data
             raise err
+        except Exception as error:
+            after_marshmallow_validate.send(
+                self,
+                record=self, context=context, result=None, error=error, **validate_kwargs)
+            raise
 
     def patch(self, patch):
         """Patch record metadata. Overrides invenio patch to perform marshmallow validation
