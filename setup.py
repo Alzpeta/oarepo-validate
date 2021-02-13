@@ -13,24 +13,14 @@ from setuptools import find_packages, setup
 
 readme = open('README.md').read()
 history = open('CHANGES.md').read()
-OAREPO_VERSION = os.environ.get('OAREPO_VERSION', '3.2.0')
+OAREPO_VERSION = os.environ.get('OAREPO_VERSION', '3.3.0')
 
 install_requires = [
     'wrapt>=1.11.2',
-    'invenio_jsonschemas',
-    'invenio_records',
-    'invenio_records_rest'
 ]
 
 tests_require = [
-    'pytest',
-    'pytest-cov',
-    'invenio_db',
-    'invenio_pidstore',
-    'invenio_search',
-    'invenio_indexer',
-    'elasticsearch>=7.0.0',
-    'elasticsearch-dsl>=7.0.0'
+    f'oarepo[tests]~={OAREPO_VERSION}'
 ]
 
 extras_require = {
