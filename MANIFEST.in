@@ -42,3 +42,6 @@ recursive-exclude tests *
 exclude .coveragerc
 exclude .envrc
 exclude requirements-doc.txt
+exclude tests/*
+recursive-exclude tests *
+recursive-exclude .github *
