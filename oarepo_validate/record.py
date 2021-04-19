@@ -147,9 +147,9 @@ class SchemaKeepingRecordMixin(AllowedSchemaMixin):
         :params patch: Dictionary of record metadata.
         :returns: A new :class:`Record` instance.
         """
-        data = apply_patch(dict(self), patch)
-        self._check_schema(data)
-        return self.__class__(data, model=self.model)
+        record = super().patch(patch)
+        self._check_schema(dict(record))
+        return record
 
 
 def files_keeping_wrapper(f):
@@ -188,13 +188,12 @@ class FilesKeepingRecordMixin:
         bucket_id = self.get('_bucket')
         files = self.get('_files')
 
-        data = apply_patch(dict(self), patch)
-        ret = self.__class__(data, model=self.model)
-        if ret.get('_bucket') != bucket_id:
+        record = super().patch(patch)
+        if record.get('_bucket') != bucket_id:
             raise AttributeError('_bucket can not be overwritten')
-        if not json_equals(ret.get('_files'), files):
+        if not json_equals(record.get('_files'), files):
             raise AttributeError('_files can not be overwritten')
-        return ret
+        return record
 
 
 class SchemaEnforcingRecord(SchemaKeepingRecordMixin, Record):

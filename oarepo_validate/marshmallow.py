@@ -103,9 +103,9 @@ class MarshmallowValidatedRecordMixin:
         :params patch: Dictionary of record metadata.
         :returns: A new :class:`Record` instance.
         """
-        data = apply_patch(dict(self), patch)
+        record = super().patch(patch)
         if self.VALIDATE_PATCH:
-            data = self.validate_marshmallow(data)
+            data = self.validate_marshmallow(dict(record))
         return self.__class__(data, model=self.model)
 
     def validate(self, **kwargs):
