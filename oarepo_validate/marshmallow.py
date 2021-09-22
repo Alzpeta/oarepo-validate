@@ -103,6 +103,7 @@ class MarshmallowValidatedRecordMixin:
         :params patch: Dictionary of record metadata.
         :returns: A new :class:`Record` instance.
         """
+        
         data = super().patch(patch)
         if self.VALIDATE_PATCH:
             data = self.validate_marshmallow(dict(data))
